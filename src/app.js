@@ -91,6 +91,11 @@ app.patch('/userUpdate/:id', async (req, res) => {
             new: true, // Return the updated document
             runValidators: true // Validate the update against the schema
         });
+        const ALLOWED_FIELDS = ['age', 'gender', 'bio', 'skills','photoUrl'];
+        const updatedFields = Object.keys(data).every(field => ALLOWED_FIELDS.includes(field));
+        if(!updatedFields) {
+            throw Error('Invalid fields in update request' + JSON.stringify(data));
+        }
         if (!updatedUser) {
             return res.status(404).json({ message: 'User not found' });
         }
