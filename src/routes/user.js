@@ -56,6 +56,10 @@ userRouter.get('/user/connections', userAuth, async(req, res) => {
 
 userRouter.get('/user/feed', userAuth, async(req, res) => {
     try {
+        const page = parseInt(req.query.page) || 1;
+        let limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+       limit = limit > 50 ? 50 : limit; // Limit to a maximum of 50 users per request
 
         const loggedInUser = req.user;
         const connectionReq = await ConnectionRequest.find({
@@ -76,7 +80,7 @@ userRouter.get('/user/feed', userAuth, async(req, res) => {
                 { _id: { $ne: loggedInUser._id } },
                 { _id: { $nin: Array.from(hideUserFromFeed) } }
             ]
-        }).select(USER_SAFE_DATA);
+        }).select(USER_SAFE_DATA).skip(skip).limit(limit)
         res.send(userFeed);
     }catch (error) {
         console.error('Error fetching user feed:', error);
