@@ -43,7 +43,7 @@ authRouter.post('/login', async (req, res)=> {
         expiresIn: '1h' // Token expiration time
     });
     res.cookie('token', token);
-    res.status(200).json({ message: 'Login successful' });
+    res.send(userEmail);
 })
 
 authRouter.post('/logout', (req, res) => {
