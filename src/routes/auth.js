@@ -20,11 +20,15 @@ authRouter.post('/signup', async ( req, res) => {
         password: passwordHash,
     })
     try{
-        await userObj.save()
-        res.status(201).json({ message: 'User created successfully' })
+        const savedUser = await userObj.save()
+           const token = jwt.sign({ id: savedUser._id }, 'sith@133732gdgdhus', {
+        expiresIn: '1h' // Token expiration time
+    });
+    res.cookie('token', token);
+        res.status(201).json({ message: 'User created successfully', data: savedUser })
     } catch (error) {
         console.error('Error creating user:', error);
-        res.status(500).json({ message: 'Internal server error' + error.message }); 
+        res.status(500).json({ message: 'Internal server error ' + error.message }); 
     }
   
 })
